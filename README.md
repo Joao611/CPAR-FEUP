@@ -1,2 +1,3 @@
 # CPAR_1
-Single-core performance evaluation
+
+First project of the Parallel Computation project, FEUP.
