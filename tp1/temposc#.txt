@@ -1,0 +1,28 @@
+size:600
+Time normal algorithm: 0,81
+Time modified algorithm: 0,61
+
+size:1000
+Time normal algorithm: 11,74
+Time modified algorithm: 2,89
+
+size:1400
+Time normal algorithm: 48,68
+Time modified algorithm: 7,98
+
+size:1800
+Time normal algorithm: 113,43
+Time modified algorithm: 19,16
+
+size:2200
+Time normal algorithm: 205,42
+Time modified algorithm: 35,94
+
+size:2600
+Time normal algorithm: 329,41
+Time modified algorithm: 50,85
+
+size:3000
+Time normal algorithm: 564,35
+Time modified algorithm: 84,60
+

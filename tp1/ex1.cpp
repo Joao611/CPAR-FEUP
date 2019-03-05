@@ -9,7 +9,8 @@ using namespace std;
 
 #define SYSTEMTIME clock_t
 
-void OnMult(int m_ar, int m_br) {
+void OnMult(int m_ar, int m_br)
+{
 
     SYSTEMTIME Time1, Time2;
 
@@ -27,16 +28,36 @@ void OnMult(int m_ar, int m_br) {
         for (j = 0; j < m_ar; j++)
             pha[i * m_ar + j] = (double)1.0;
 
+    // cout << "Matrix A: " << endl;
+    // for (i = 0; i < 10; i++)
+    // {
+    //     for (j = 0; j < min(10, m_br); j++)
+    //         cout << pha[i * m_ar + j] << " ";
+
+    //     cout << endl;
+    // }
+
     for (i = 0; i < m_br; i++)
         for (j = 0; j < m_br; j++)
             phb[i * m_br + j] = (double)(i + 1);
 
+    // cout << "Matrix B: " << endl;
+    // for (i = 0; i < 10; i++)
+    // {
+    //     for (j = 0; j < min(10, m_br); j++)
+    //         cout << phb[i * m_ar + j] << " ";
+
+    //     cout << endl;
+    // }
     Time1 = clock();
 
-    for (i = 0; i < m_ar; i++) {
-        for (j = 0; j < m_br; j++) {
+    for (i = 0; i < m_ar; i++)
+    {
+        for (j = 0; j < m_br; j++)
+        {
             temp = 0;
-            for (k = 0; k < m_ar; k++) {
+            for (k = 0; k < m_ar; k++)
+            {
                 temp += pha[i * m_ar + k] * phb[k * m_br + j];
             }
             phc[i * m_ar + j] = temp;
@@ -49,7 +70,17 @@ void OnMult(int m_ar, int m_br) {
     cout << st;
 
     cout << "Result matrix: " << endl;
-    for (i = 0; i < 1; i++) {
+
+    // cout << "Matrix B: " << endl;
+    // for (i = 0; i < 10; i++)
+    // {
+    //     for (j = 0; j < min(10, m_br); j++)
+    //         cout << phc[i * m_ar + j] << " ";
+
+    //     cout << endl;
+    // }
+    for (i = 0; i < 1; i++)
+    {
         for (j = 0; j < min(10, m_br); j++)
             cout << phc[j] << " ";
     }
@@ -60,7 +91,8 @@ void OnMult(int m_ar, int m_br) {
     free(phc);
 }
 
-void OnMultLine(int m_ar, int m_br) {
+void OnMultLine(int m_ar, int m_br)
+{
 
     SYSTEMTIME Time1, Time2;
 
@@ -84,9 +116,12 @@ void OnMultLine(int m_ar, int m_br) {
 
     Time1 = clock();
 
-    for (i = 0; i < m_ar; i++) {
-        for (k = 0; k < m_br; k++) {
-            for (j = 0; j < m_ar; j++) {
+    for (i = 0; i < m_ar; i++)
+    {
+        for (k = 0; k < m_br; k++)
+        {
+            for (j = 0; j < m_ar; j++)
+            {
                 phc[i * m_ar + j] += pha[i * m_ar + k] * phb[k * m_br + j];
             }
         }
@@ -98,9 +133,12 @@ void OnMultLine(int m_ar, int m_br) {
     cout << st;
 
     cout << "Result matrix: " << endl;
-    for (i = 0; i < 1; i++) {
+    for (i = 0; i < 1; i++)
+    {
         for (j = 0; j < min(10, m_br); j++)
             cout << phc[j] << " ";
+
+        cout << endl;
     }
     cout << endl;
 
@@ -109,7 +147,8 @@ void OnMultLine(int m_ar, int m_br) {
     free(phc);
 }
 
-float produtoInterno(float *v1, float *v2, int col) {
+float produtoInterno(float *v1, float *v2, int col)
+{
     int i;
     float soma = 0.0;
 
@@ -119,14 +158,17 @@ float produtoInterno(float *v1, float *v2, int col) {
     return (soma);
 }
 
-void handle_error(int retval) {
+void handle_error(int retval)
+{
     printf("PAPI error %d: %s\n", retval, PAPI_strerror(retval));
     exit(1);
 }
 
-void init_papi() {
+void init_papi()
+{
     int retval = PAPI_library_init(PAPI_VER_CURRENT);
-    if (retval != PAPI_VER_CURRENT && retval < 0) {
+    if (retval != PAPI_VER_CURRENT && retval < 0)
+    {
         printf("PAPI library version mismatch!\n");
         exit(1);
     }
@@ -138,7 +180,8 @@ void init_papi() {
               << " REVISION: " << PAPI_VERSION_REVISION(retval) << "\n";
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 
     char c;
     int lin, col, nt = 1;
@@ -165,8 +208,10 @@ int main(int argc, char *argv[]) {
         cout << "ERRO: PAPI_L2_DCM" << endl;
 
     op = 1;
-    do {
-        cout << endl << "1. Multiplication" << endl;
+    do
+    {
+        cout << endl
+             << "1. Multiplication" << endl;
         cout << "2. Line Multiplication" << endl;
         cout << "Selection?: ";
         cin >> op;
@@ -180,7 +225,8 @@ int main(int argc, char *argv[]) {
         if (ret != PAPI_OK)
             cout << "ERRO: Start PAPI" << endl;
 
-        switch (op) {
+        switch (op)
+        {
         case 1:
             OnMult(lin, col);
             break;
