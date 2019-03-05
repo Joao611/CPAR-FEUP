@@ -147,6 +147,51 @@ void OnMultLine(int m_ar, int m_br)
     free(phc);
 }
 
+void OnMultBlock(int m_ar, int m_br, int blockSize) {
+    SYSTEMTIME Time1, Time2;
+
+    char st[100];
+    double temp;
+    int i, j, k;
+
+    double *pha, *phb, *phc;
+
+    pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
+    phb = (double *)malloc((m_ar * m_ar) * sizeof(double));
+    phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
+
+    for (i = 0; i < m_ar; i++)
+        for (j = 0; j < m_ar; j++)
+            pha[i * m_ar + j] = (double)1.0;
+
+    for (i = 0; i < m_br; i++)
+        for (j = 0; j < m_br; j++)
+            phb[i * m_br + j] = (double)(i + 1);
+
+    Time1 = clock();
+
+    // ALGORITHM
+
+    Time2 = clock();
+    sprintf(st, "Time: %3.3f seconds\n",
+            (double)(Time2 - Time1) / CLOCKS_PER_SEC);
+    cout << st;
+
+    cout << "Result matrix: " << endl;
+    for (i = 0; i < 1; i++)
+    {
+        for (j = 0; j < min(10, m_br); j++)
+            cout << phc[j] << " ";
+
+        cout << endl;
+    }
+    cout << endl;
+
+    free(pha);
+    free(phb);
+    free(phc);
+}
+
 float produtoInterno(float *v1, float *v2, int col)
 {
     int i;
@@ -213,6 +258,7 @@ int main(int argc, char *argv[])
         cout << endl
              << "1. Multiplication" << endl;
         cout << "2. Line Multiplication" << endl;
+        cout << "3. Block Multiplication" << endl;
         cout << "Selection?: ";
         cin >> op;
         if (op == 0)
@@ -232,7 +278,12 @@ int main(int argc, char *argv[])
             break;
         case 2:
             OnMultLine(lin, col);
-
+            break;
+        case 3:
+            int blockSize;
+            cout << "Block size: ";
+            cin >> blockSize;
+            OnMultBlock(lin, col, blockSize);
             break;
         }
 
