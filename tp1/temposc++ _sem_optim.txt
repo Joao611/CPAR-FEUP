@@ -1,0 +1,35 @@
+Size: 600
+normal algorithm time: 1.196 seconds
+
+modified algorithm Time: 1.221 seconds
+
+Size: 1000
+normal algorithm time: 6.033 seconds
+
+modified algorithm Time: 4.745 seconds
+
+Size: 1400
+normal algorithm time: 27.213 seconds
+
+modified algorithm Time: 13.382 seconds
+
+Size: 1800
+normal algorithm time: 65.188 seconds
+
+modified algorithm Time: 29.564 seconds
+
+Size: 2200
+normal algorithm time: 124.431 seconds
+
+modified algorithm Time: 52.751 seconds
+
+Size: 2600
+normal algorithm time: 222.950 seconds
+
+modified algorithm Time: 95.720 seconds
+
+Size: 3000
+normal algorithm time: 375.685 seconds
+
+modified algorithm Time: 137.710 seconds
+
