@@ -65,11 +65,11 @@ void OnMult(int m_ar, int m_br)
     }
 
     Time2 = clock();
-    sprintf(st, "Time: %3.3f seconds\n",
+    sprintf(st, "normal algorithm time: %3.3f seconds\n",
             (double)(Time2 - Time1) / CLOCKS_PER_SEC);
     cout << st;
 
-    cout << "Result matrix: " << endl;
+   // cout << "Result matrix: " << endl;
 
     // cout << "Matrix B: " << endl;
     // for (i = 0; i < 10; i++)
@@ -79,11 +79,11 @@ void OnMult(int m_ar, int m_br)
 
     //     cout << endl;
     // }
-    for (i = 0; i < 1; i++)
-    {
-        for (j = 0; j < min(10, m_br); j++)
-            cout << phc[j] << " ";
-    }
+    // for (i = 0; i < 1; i++)
+    // {
+    //     for (j = 0; j < min(10, m_br); j++)
+    //         cout << phc[j] << " ";
+    // }
     cout << endl;
 
     free(pha);
@@ -128,7 +128,7 @@ void OnMultLine(int m_ar, int m_br)
     }
 
     Time2 = clock();
-    sprintf(st, "Time: %3.3f seconds\n",
+    sprintf(st, "modified algorithm Time: %3.3f seconds\n",
             (double)(Time2 - Time1) / CLOCKS_PER_SEC);
     cout << st;
 
@@ -169,8 +169,26 @@ void OnMultBlock(int m_ar, int m_br, int blockSize) {
             phb[i * m_br + j] = (double)(i + 1);
 
     Time1 = clock();
+    int nBlocks= m_ar/blockSize;
+    int iBase, jBase, kBase;
 
     // ALGORITHM
+    for (int i=0; i < nBlocks; i++) { // iterate blocks vertically
+        iBase = i * blockSize;
+        for (int j = 0; j < nBlocks; j++) { // iterate blocks horizontally
+            jBase = j * blockSize;
+            for (int k=0; k < nBlocks; k++) {
+                kBase = k * blockSize;
+                for(int w=0; w < blockSize; w++){
+                    for(int q=0; q<blockSize; q++){
+                        for(int e=0; e<blockSize;e++){
+                            phc[(iBase +w)*m_ar+kBase +e] += pha[(iBase+w)*m_ar + (jBase +q)] *phb[(jBase +q)*m_br+ kBase +e];
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Time2 = clock();
     sprintf(st, "Time: %3.3f seconds\n",
@@ -259,6 +277,7 @@ int main(int argc, char *argv[])
              << "1. Multiplication" << endl;
         cout << "2. Line Multiplication" << endl;
         cout << "3. Block Multiplication" << endl;
+        cout << "4. Experience Multiplication" << endl;
         cout << "Selection?: ";
         cin >> op;
         if (op == 0)
@@ -285,8 +304,16 @@ int main(int argc, char *argv[])
             cin >> blockSize;
             OnMultBlock(lin, col, blockSize);
             break;
-        }
 
+        case 4:
+        for(int h=600;h<=3000;h+=400){
+            cout << "Size: "<< h<< endl;
+             OnMult(h, h);
+             OnMultLine(h,h);
+
+
+        }
+        }
         ret = PAPI_stop(EventSet, values);
         if (ret != PAPI_OK)
             cout << "ERRO: Stop PAPI" << endl;
