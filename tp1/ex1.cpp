@@ -9,47 +9,16 @@ using namespace std;
 
 #define SYSTEMTIME clock_t
 
-void OnMult(int lines, int cols)
-{
+enum MultType {
+    ORIGINAL,
+    LINE,
+    BLOCK_ORIGINAL,
+    BLOCK_LINE
+};
 
-    SYSTEMTIME Time1, Time2;
-
-    char st[100];
-    double temp;
+void calcOriginalMult(double *pha, double *phb, double *phc, int lines, int cols) {
     int i, j, k;
-
-    double *pha, *phb, *phc;
-
-    pha = (double *)malloc((lines * lines) * sizeof(double));
-    phb = (double *)malloc((lines * lines) * sizeof(double));
-    phc = (double *)malloc((lines * lines) * sizeof(double));
-
-    for (i = 0; i < lines; i++)
-        for (j = 0; j < lines; j++)
-            pha[i * lines + j] = (double)1.0;
-
-    // cout << "Matrix A: " << endl;
-    // for (i = 0; i < 10; i++)
-    // {
-    //     for (j = 0; j < min(10, cols); j++)
-    //         cout << pha[i * lines + j] << " ";
-
-    //     cout << endl;
-    // }
-
-    for (i = 0; i < cols; i++)
-        for (j = 0; j < cols; j++)
-            phb[i * cols + j] = (double)(i + 1);
-
-    // cout << "Matrix B: " << endl;
-    // for (i = 0; i < 10; i++)
-    // {
-    //     for (j = 0; j < min(10, cols); j++)
-    //         cout << phb[i * lines + j] << " ";
-
-    //     cout << endl;
-    // }
-    Time1 = clock();
+    int temp;
 
     for (i = 0; i < lines; i++)
     {
@@ -63,59 +32,11 @@ void OnMult(int lines, int cols)
             phc[i * lines + j] = temp;
         }
     }
-
-    Time2 = clock();
-    sprintf(st, "normal algorithm time: %3.3f seconds\n",
-            (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-    cout << st;
-
-   // cout << "Result matrix: " << endl;
-
-    // cout << "Matrix B: " << endl;
-    // for (i = 0; i < 10; i++)
-    // {
-    //     for (j = 0; j < min(10, cols); j++)
-    //         cout << phc[i * lines + j] << " ";
-
-    //     cout << endl;
-    // }
-    for (i = 0; i < 1; i++)
-    {
-        for (j = 0; j < min(10, cols); j++)
-            cout << phc[j] << " ";
-    }
-    cout << endl;
-
-    free(pha);
-    free(phb);
-    free(phc);
 }
 
-void OnMultLine(int lines, int cols)
-{
-
-    SYSTEMTIME Time1, Time2;
-
-    char st[100];
-    double temp;
+void calcLineMult(double *pha, double *phb, double *phc, int lines, int cols) {
     int i, j, k;
-
-    double *pha, *phb, *phc;
-
-    pha = (double *)malloc((lines * lines) * sizeof(double));
-    phb = (double *)malloc((lines * lines) * sizeof(double));
-    phc = (double *)malloc((lines * lines) * sizeof(double));
-
-    for (i = 0; i < lines; i++)
-        for (j = 0; j < lines; j++)
-            pha[i * lines + j] = (double)1.0;
-
-    for (i = 0; i < cols; i++)
-        for (j = 0; j < cols; j++)
-            phb[i * cols + j] = (double)(i + 1);
-
-    Time1 = clock();
-
+    
     for (i = 0; i < lines; i++)
     {
         for (k = 0; k < cols; k++)
@@ -126,25 +47,6 @@ void OnMultLine(int lines, int cols)
             }
         }
     }
-
-    Time2 = clock();
-    sprintf(st, "modified algorithm Time: %3.3f seconds\n",
-            (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-    cout << st;
-
-    cout << "Result matrix: " << endl;
-    for (i = 0; i < 1; i++)
-    {
-        for (j = 0; j < min(10, cols); j++)
-            cout << phc[j] << " ";
-
-        cout << endl;
-    }
-    cout << endl;
-
-    free(pha);
-    free(phb);
-    free(phc);
 }
 
 void calcOriginalBlockMult(double *pha, double *phb, double *phc, int lines, int cols, int blockSize) {
@@ -197,17 +99,8 @@ void calcLineBlockMult(double *pha, double *phb, double *phc, int lines, int col
     }
 }
 
-enum BlockMultType {
-    ORIGINAL,
-    LINE
-};
-
-void OnMultBlock(int lines, int cols, int blockSize, enum BlockMultType blockMultType) {
+void OnMult(int lines, int cols, enum MultType multType, int blockSize) {
     SYSTEMTIME Time1, Time2;
-
-    char st[100];
-    double temp;
-    int i, j, k;
 
     double *pha, *phb, *phc;
 
@@ -215,37 +108,51 @@ void OnMultBlock(int lines, int cols, int blockSize, enum BlockMultType blockMul
     phb = (double *)malloc((lines * lines) * sizeof(double));
     phc = (double *)malloc((lines * lines) * sizeof(double));
 
-    for (i = 0; i < lines; i++)
-        for (j = 0; j < lines; j++)
-            pha[i * lines + j] = (double)1.0;
+    int i, j, k;
 
-    for (i = 0; i < cols; i++)
-        for (j = 0; j < cols; j++)
-            phb[i * cols + j] = (double)(i + 1);
+    for (i = 0; i < lines; i++) {
+        for (j = 0; j < lines; j++) {
+            pha[i * lines + j] = (double) 1.0;
+        }
+    }
+
+    for (i = 0; i < cols; i++) {
+        for (j = 0; j < cols; j++) {
+            phb[i * cols + j] = (double) (i + 1);
+        }
+    }
 
     Time1 = clock();
 
-    switch (blockMultType) {
+    switch (multType) {
         case ORIGINAL:
-            calcOriginalBlockMult(pha, phb, phc, lines, cols, blockSize);
+            calcOriginalMult(pha, phb, phc, lines, cols);
             break;
         case LINE:
+            calcLineMult(pha, phb, phc, lines, cols);
+            break;
+        case BLOCK_ORIGINAL:
+            calcOriginalBlockMult(pha, phb, phc, lines, cols, blockSize);
+            break;
+        case BLOCK_LINE:
             calcLineBlockMult(pha, phb, phc, lines, cols, blockSize);
             break;
+        default:
+            cerr << "Invalid mult type" << endl;
     }
 
     Time2 = clock();
+
+    char st[100];
     sprintf(st, "Time: %3.3f seconds\n",
             (double)(Time2 - Time1) / CLOCKS_PER_SEC);
     cout << st;
 
-    cout << "Result matrix: " << endl;
+    // cout << "Result matrix: " << endl;
     for (i = 0; i < 1; i++)
     {
         for (j = 0; j < min(10, cols); j++)
             cout << phc[j] << " ";
-
-        cout << endl;
     }
     cout << endl;
 
@@ -326,29 +233,28 @@ int main(int argc, char *argv[])
 
         int blockSize;
 
-        switch (op)
-        {
+        switch (op) {
         case 1:
-            OnMult(lin, col);
+            OnMult(lin, col, ORIGINAL, -1);
             break;
         case 2:
-            OnMultLine(lin, col);
+            OnMult(lin, col, LINE, -1);
             break;
         case 3:
             cout << "Block size: ";
             cin >> blockSize;
-            OnMultBlock(lin, col, blockSize, ORIGINAL);
+            OnMult(lin, col, BLOCK_ORIGINAL, blockSize);
             break;
         case 4:
             cout << "Block size: ";
             cin >> blockSize;
-            OnMultBlock(lin, col, blockSize, LINE);
+            OnMult(lin, col,BLOCK_LINE, blockSize);
             break;
         case 5:
             for(int h=600;h<=3000;h+=400){
                 cout << "Size: "<< h<< endl;
-                OnMult(h, h);
-                OnMultLine(h,h);
+                // OnMult(h, h);
+                // OnMultLine(h,h);
             }
             break;
         default:
