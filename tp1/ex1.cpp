@@ -9,7 +9,7 @@ using namespace std;
 
 #define SYSTEMTIME clock_t
 
-void OnMult(int m_ar, int m_br)
+void OnMult(int lines, int cols)
 {
 
     SYSTEMTIME Time1, Time2;
@@ -20,47 +20,47 @@ void OnMult(int m_ar, int m_br)
 
     double *pha, *phb, *phc;
 
-    pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
-    phb = (double *)malloc((m_ar * m_ar) * sizeof(double));
-    phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
+    pha = (double *)malloc((lines * lines) * sizeof(double));
+    phb = (double *)malloc((lines * lines) * sizeof(double));
+    phc = (double *)malloc((lines * lines) * sizeof(double));
 
-    for (i = 0; i < m_ar; i++)
-        for (j = 0; j < m_ar; j++)
-            pha[i * m_ar + j] = (double)1.0;
+    for (i = 0; i < lines; i++)
+        for (j = 0; j < lines; j++)
+            pha[i * lines + j] = (double)1.0;
 
     // cout << "Matrix A: " << endl;
     // for (i = 0; i < 10; i++)
     // {
-    //     for (j = 0; j < min(10, m_br); j++)
-    //         cout << pha[i * m_ar + j] << " ";
+    //     for (j = 0; j < min(10, cols); j++)
+    //         cout << pha[i * lines + j] << " ";
 
     //     cout << endl;
     // }
 
-    for (i = 0; i < m_br; i++)
-        for (j = 0; j < m_br; j++)
-            phb[i * m_br + j] = (double)(i + 1);
+    for (i = 0; i < cols; i++)
+        for (j = 0; j < cols; j++)
+            phb[i * cols + j] = (double)(i + 1);
 
     // cout << "Matrix B: " << endl;
     // for (i = 0; i < 10; i++)
     // {
-    //     for (j = 0; j < min(10, m_br); j++)
-    //         cout << phb[i * m_ar + j] << " ";
+    //     for (j = 0; j < min(10, cols); j++)
+    //         cout << phb[i * lines + j] << " ";
 
     //     cout << endl;
     // }
     Time1 = clock();
 
-    for (i = 0; i < m_ar; i++)
+    for (i = 0; i < lines; i++)
     {
-        for (j = 0; j < m_br; j++)
+        for (j = 0; j < cols; j++)
         {
             temp = 0;
-            for (k = 0; k < m_ar; k++)
+            for (k = 0; k < lines; k++)
             {
-                temp += pha[i * m_ar + k] * phb[k * m_br + j];
+                temp += pha[i * lines + k] * phb[k * cols + j];
             }
-            phc[i * m_ar + j] = temp;
+            phc[i * lines + j] = temp;
         }
     }
 
@@ -74,16 +74,16 @@ void OnMult(int m_ar, int m_br)
     // cout << "Matrix B: " << endl;
     // for (i = 0; i < 10; i++)
     // {
-    //     for (j = 0; j < min(10, m_br); j++)
-    //         cout << phc[i * m_ar + j] << " ";
+    //     for (j = 0; j < min(10, cols); j++)
+    //         cout << phc[i * lines + j] << " ";
 
     //     cout << endl;
     // }
-    // for (i = 0; i < 1; i++)
-    // {
-    //     for (j = 0; j < min(10, m_br); j++)
-    //         cout << phc[j] << " ";
-    // }
+    for (i = 0; i < 1; i++)
+    {
+        for (j = 0; j < min(10, cols); j++)
+            cout << phc[j] << " ";
+    }
     cout << endl;
 
     free(pha);
@@ -91,7 +91,7 @@ void OnMult(int m_ar, int m_br)
     free(phc);
 }
 
-void OnMultLine(int m_ar, int m_br)
+void OnMultLine(int lines, int cols)
 {
 
     SYSTEMTIME Time1, Time2;
@@ -102,27 +102,27 @@ void OnMultLine(int m_ar, int m_br)
 
     double *pha, *phb, *phc;
 
-    pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
-    phb = (double *)malloc((m_ar * m_ar) * sizeof(double));
-    phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
+    pha = (double *)malloc((lines * lines) * sizeof(double));
+    phb = (double *)malloc((lines * lines) * sizeof(double));
+    phc = (double *)malloc((lines * lines) * sizeof(double));
 
-    for (i = 0; i < m_ar; i++)
-        for (j = 0; j < m_ar; j++)
-            pha[i * m_ar + j] = (double)1.0;
+    for (i = 0; i < lines; i++)
+        for (j = 0; j < lines; j++)
+            pha[i * lines + j] = (double)1.0;
 
-    for (i = 0; i < m_br; i++)
-        for (j = 0; j < m_br; j++)
-            phb[i * m_br + j] = (double)(i + 1);
+    for (i = 0; i < cols; i++)
+        for (j = 0; j < cols; j++)
+            phb[i * cols + j] = (double)(i + 1);
 
     Time1 = clock();
 
-    for (i = 0; i < m_ar; i++)
+    for (i = 0; i < lines; i++)
     {
-        for (k = 0; k < m_br; k++)
+        for (k = 0; k < cols; k++)
         {
-            for (j = 0; j < m_ar; j++)
+            for (j = 0; j < lines; j++)
             {
-                phc[i * m_ar + j] += pha[i * m_ar + k] * phb[k * m_br + j];
+                phc[i * lines + j] += pha[i * lines + k] * phb[k * cols + j];
             }
         }
     }
@@ -135,7 +135,7 @@ void OnMultLine(int m_ar, int m_br)
     cout << "Result matrix: " << endl;
     for (i = 0; i < 1; i++)
     {
-        for (j = 0; j < min(10, m_br); j++)
+        for (j = 0; j < min(10, cols); j++)
             cout << phc[j] << " ";
 
         cout << endl;
@@ -147,7 +147,60 @@ void OnMultLine(int m_ar, int m_br)
     free(phc);
 }
 
-void OnMultBlock(int m_ar, int m_br, int blockSize) {
+void calcOriginalBlockMult(double *pha, double *phb, double *phc, int lines, int cols, int blockSize) {
+    int nBlocks = lines / blockSize;
+    int iBase, jBase, kBase;
+
+    for (int i = 0; i < nBlocks; i++) { // iterate blocks vertically
+        iBase = i * blockSize;
+        for (int j = 0; j < nBlocks; j++) { // iterate blocks horizontally
+            jBase = j * blockSize;
+            // compute each block
+            for (int k = 0; k < nBlocks; k++) { // for each resulting block, iterate sum's parcels (each parcel is a multiplication of block * block)
+                kBase = k * blockSize;
+                // compute a block's component (block * block)
+                for (int i1 = 0; i1 < blockSize; i1++) {
+                    for (int j1 = 0; j1 < blockSize; j1++) {
+                        for (int k1 = 0; k1 < blockSize; k1++) {
+                            phc[(iBase + i1) * lines + (jBase + j1)] += pha[(iBase + i1) * lines + (kBase + k1)] * phb[(kBase + k1) * cols + (jBase + j1)];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void calcLineBlockMult(double *pha, double *phb, double *phc, int lines, int cols, int blockSize) {
+    int nBlocks = lines / blockSize;
+    int iBase, jBase, kBase;
+
+    for (int i = 0; i < nBlocks; i++) { // iterate blocks vertically
+        iBase = i * blockSize;
+        for (int j = 0; j < nBlocks; j++) { // iterate blocks horizontally
+            jBase = j * blockSize;
+            // compute each block
+            for (int k = 0; k < nBlocks; k++) { // for each resulting block, iterate sum's parcels (each parcel is a multiplication of block * block)
+                kBase = k * blockSize;
+                // compute a block's component (block * block)
+                for (int i1 = 0; i1 < blockSize; i1++) {
+                    for (int k1 = 0; k1 < blockSize; k1++) {
+                        for (int j1 = 0; j1 < blockSize; j1++) {
+                            phc[(iBase + i1) * lines + (jBase + j1)] += pha[(iBase + i1) * lines + (kBase + k1)] * phb[(kBase + k1) * cols + (jBase + j1)];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+enum BlockMultType {
+    ORIGINAL,
+    LINE
+};
+
+void OnMultBlock(int lines, int cols, int blockSize, enum BlockMultType blockMultType) {
     SYSTEMTIME Time1, Time2;
 
     char st[100];
@@ -156,38 +209,27 @@ void OnMultBlock(int m_ar, int m_br, int blockSize) {
 
     double *pha, *phb, *phc;
 
-    pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
-    phb = (double *)malloc((m_ar * m_ar) * sizeof(double));
-    phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
+    pha = (double *)malloc((lines * lines) * sizeof(double));
+    phb = (double *)malloc((lines * lines) * sizeof(double));
+    phc = (double *)malloc((lines * lines) * sizeof(double));
 
-    for (i = 0; i < m_ar; i++)
-        for (j = 0; j < m_ar; j++)
-            pha[i * m_ar + j] = (double)1.0;
+    for (i = 0; i < lines; i++)
+        for (j = 0; j < lines; j++)
+            pha[i * lines + j] = (double)1.0;
 
-    for (i = 0; i < m_br; i++)
-        for (j = 0; j < m_br; j++)
-            phb[i * m_br + j] = (double)(i + 1);
+    for (i = 0; i < cols; i++)
+        for (j = 0; j < cols; j++)
+            phb[i * cols + j] = (double)(i + 1);
 
     Time1 = clock();
-    int nBlocks= m_ar/blockSize;
-    int iBase, jBase, kBase;
 
-    // ALGORITHM
-    for (int i=0; i < nBlocks; i++) { // iterate blocks vertically
-        iBase = i * blockSize;
-        for (int j = 0; j < nBlocks; j++) { // iterate blocks horizontally
-            jBase = j * blockSize;
-            for (int k=0; k < nBlocks; k++) {
-                kBase = k * blockSize;
-                for(int w=0; w < blockSize; w++){
-                    for(int q=0; q<blockSize; q++){
-                        for(int e=0; e<blockSize;e++){
-                            phc[(iBase +w)*m_ar+kBase +e] += pha[(iBase+w)*m_ar + (jBase +q)] *phb[(jBase +q)*m_br+ kBase +e];
-                        }
-                    }
-                }
-            }
-        }
+    switch (blockMultType) {
+        case ORIGINAL:
+            calcOriginalBlockMult(pha, phb, phc, lines, cols, blockSize);
+            break;
+        case LINE:
+            calcLineBlockMult(pha, phb, phc, lines, cols, blockSize);
+            break;
     }
 
     Time2 = clock();
@@ -198,7 +240,7 @@ void OnMultBlock(int m_ar, int m_br, int blockSize) {
     cout << "Result matrix: " << endl;
     for (i = 0; i < 1; i++)
     {
-        for (j = 0; j < min(10, m_br); j++)
+        for (j = 0; j < min(10, cols); j++)
             cout << phc[j] << " ";
 
         cout << endl;
@@ -274,10 +316,11 @@ int main(int argc, char *argv[])
     do
     {
         cout << endl
-             << "1. Multiplication" << endl;
+             << "1. Original Multiplication" << endl;
         cout << "2. Line Multiplication" << endl;
-        cout << "3. Block Multiplication" << endl;
-        cout << "4. Experience Multiplication" << endl;
+        cout << "3. Block Multiplication - Original" << endl;
+        cout << "4. Block Multiplication - Line" << endl;
+        cout << "5. Experience Multiplication" << endl;
         cout << "Selection?: ";
         cin >> op;
         if (op == 0)
@@ -290,6 +333,8 @@ int main(int argc, char *argv[])
         if (ret != PAPI_OK)
             cout << "ERRO: Start PAPI" << endl;
 
+        int blockSize;
+        
         switch (op)
         {
         case 1:
@@ -299,20 +344,24 @@ int main(int argc, char *argv[])
             OnMultLine(lin, col);
             break;
         case 3:
-            int blockSize;
             cout << "Block size: ";
             cin >> blockSize;
-            OnMultBlock(lin, col, blockSize);
+            OnMultBlock(lin, col, blockSize, ORIGINAL);
             break;
-
         case 4:
-        for(int h=600;h<=3000;h+=400){
-            cout << "Size: "<< h<< endl;
-             OnMult(h, h);
-             OnMultLine(h,h);
-
-
-        }
+            cout << "Block size: ";
+            cin >> blockSize;
+            OnMultBlock(lin, col, blockSize, LINE);
+            break;
+        case 5:
+            for(int h=600;h<=3000;h+=400){
+                cout << "Size: "<< h<< endl;
+                OnMult(h, h);
+                OnMultLine(h,h);
+            }
+            break;
+        default:
+            cout << "Oops" << endl;
         }
         ret = PAPI_stop(EventSet, values);
         if (ret != PAPI_OK)
