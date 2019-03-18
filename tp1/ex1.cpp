@@ -149,19 +149,20 @@ void OnMultLine(int lines, int cols)
 
 void calcOriginalBlockMult(double *pha, double *phb, double *phc, int lines, int cols, int blockSize) {
     int nBlocks = lines / blockSize;
+    int i, j, k, i1, j1, k1;
     int iBase, jBase, kBase;
 
-    for (int i = 0; i < nBlocks; i++) { // iterate blocks vertically
+    for (i = 0; i < nBlocks; i++) { // iterate blocks vertically
         iBase = i * blockSize;
-        for (int j = 0; j < nBlocks; j++) { // iterate blocks horizontally
+        for (j = 0; j < nBlocks; j++) { // iterate blocks horizontally
             jBase = j * blockSize;
             // compute each block
-            for (int k = 0; k < nBlocks; k++) { // for each resulting block, iterate sum's parcels (each parcel is a multiplication of block * block)
+            for (k = 0; k < nBlocks; k++) { // for each resulting block, iterate sum's parcels (each parcel is a multiplication of block * block)
                 kBase = k * blockSize;
                 // compute a block's component (block * block)
-                for (int i1 = 0; i1 < blockSize; i1++) {
-                    for (int j1 = 0; j1 < blockSize; j1++) {
-                        for (int k1 = 0; k1 < blockSize; k1++) {
+                for (i1 = 0; i1 < blockSize; i1++) {
+                    for (j1 = 0; j1 < blockSize; j1++) {
+                        for (k1 = 0; k1 < blockSize; k1++) {
                             phc[(iBase + i1) * lines + (jBase + j1)] += pha[(iBase + i1) * lines + (kBase + k1)] * phb[(kBase + k1) * cols + (jBase + j1)];
                         }
                     }
@@ -173,19 +174,20 @@ void calcOriginalBlockMult(double *pha, double *phb, double *phc, int lines, int
 
 void calcLineBlockMult(double *pha, double *phb, double *phc, int lines, int cols, int blockSize) {
     int nBlocks = lines / blockSize;
+    int i, j, k, i1, j1, k1;
     int iBase, jBase, kBase;
 
-    for (int i = 0; i < nBlocks; i++) { // iterate blocks vertically
+    for (i = 0; i < nBlocks; i++) { // iterate blocks vertically
         iBase = i * blockSize;
-        for (int j = 0; j < nBlocks; j++) { // iterate blocks horizontally
+        for (j = 0; j < nBlocks; j++) { // iterate blocks horizontally
             jBase = j * blockSize;
             // compute each block
-            for (int k = 0; k < nBlocks; k++) { // for each resulting block, iterate sum's parcels (each parcel is a multiplication of block * block)
+            for (k = 0; k < nBlocks; k++) { // for each resulting block, iterate sum's parcels (each parcel is a multiplication of block * block)
                 kBase = k * blockSize;
                 // compute a block's component (block * block)
-                for (int i1 = 0; i1 < blockSize; i1++) {
-                    for (int k1 = 0; k1 < blockSize; k1++) {
-                        for (int j1 = 0; j1 < blockSize; j1++) {
+                for (i1 = 0; i1 < blockSize; i1++) {
+                    for (k1 = 0; k1 < blockSize; k1++) {
+                        for (j1 = 0; j1 < blockSize; j1++) {
                             phc[(iBase + i1) * lines + (jBase + j1)] += pha[(iBase + i1) * lines + (kBase + k1)] * phb[(kBase + k1) * cols + (jBase + j1)];
                         }
                     }
@@ -334,7 +336,7 @@ int main(int argc, char *argv[])
             cout << "ERRO: Start PAPI" << endl;
 
         int blockSize;
-        
+
         switch (op)
         {
         case 1:
