@@ -16,41 +16,41 @@ enum MultType {
     BLOCK_LINE
 };
 
-void calcOriginalMult(double *pha, double *phb, double *phc, int lines, int cols) {
+void calcOriginalMult(double *pha, double *phb, double *phc, int size) {
     int i, j, k;
     int temp;
 
-    for (i = 0; i < lines; i++)
+    for (i = 0; i < size; i++)
     {
-        for (j = 0; j < cols; j++)
+        for (j = 0; j < size; j++)
         {
             temp = 0;
-            for (k = 0; k < lines; k++)
+            for (k = 0; k < size; k++)
             {
-                temp += pha[i * lines + k] * phb[k * cols + j];
+                temp += pha[i * size + k] * phb[k * size + j];
             }
-            phc[i * lines + j] = temp;
+            phc[i * size + j] = temp;
         }
     }
 }
 
-void calcLineMult(double *pha, double *phb, double *phc, int lines, int cols) {
+void calcLineMult(double *pha, double *phb, double *phc, int size) {
     int i, j, k;
     
-    for (i = 0; i < lines; i++)
+    for (i = 0; i < size; i++)
     {
-        for (k = 0; k < cols; k++)
+        for (k = 0; k < size; k++)
         {
-            for (j = 0; j < lines; j++)
+            for (j = 0; j < size; j++)
             {
-                phc[i * lines + j] += pha[i * lines + k] * phb[k * cols + j];
+                phc[i * size + j] += pha[i * size + k] * phb[k * size + j];
             }
         }
     }
 }
 
-void calcOriginalBlockMult(double *pha, double *phb, double *phc, int lines, int cols, int blockSize) {
-    int nBlocks = lines / blockSize;
+void calcOriginalBlockMult(double *pha, double *phb, double *phc, int size, int blockSize) {
+    int nBlocks = size / blockSize;
     int i, j, k, i1, j1, k1;
     int iBase, jBase, kBase;
 
@@ -65,7 +65,7 @@ void calcOriginalBlockMult(double *pha, double *phb, double *phc, int lines, int
                 for (i1 = 0; i1 < blockSize; i1++) {
                     for (j1 = 0; j1 < blockSize; j1++) {
                         for (k1 = 0; k1 < blockSize; k1++) {
-                            phc[(iBase + i1) * lines + (jBase + j1)] += pha[(iBase + i1) * lines + (kBase + k1)] * phb[(kBase + k1) * cols + (jBase + j1)];
+                            phc[(iBase + i1) * size + (jBase + j1)] += pha[(iBase + i1) * size + (kBase + k1)] * phb[(kBase + k1) * size + (jBase + j1)];
                         }
                     }
                 }
@@ -74,8 +74,8 @@ void calcOriginalBlockMult(double *pha, double *phb, double *phc, int lines, int
     }
 }
 
-void calcLineBlockMult(double *pha, double *phb, double *phc, int lines, int cols, int blockSize) {
-    int nBlocks = lines / blockSize;
+void calcLineBlockMult(double *pha, double *phb, double *phc, int size, int blockSize) {
+    int nBlocks = size / blockSize;
     int i, j, k, i1, j1, k1;
     int iBase, jBase, kBase;
 
@@ -90,7 +90,7 @@ void calcLineBlockMult(double *pha, double *phb, double *phc, int lines, int col
                 for (i1 = 0; i1 < blockSize; i1++) {
                     for (k1 = 0; k1 < blockSize; k1++) {
                         for (j1 = 0; j1 < blockSize; j1++) {
-                            phc[(iBase + i1) * lines + (jBase + j1)] += pha[(iBase + i1) * lines + (kBase + k1)] * phb[(kBase + k1) * cols + (jBase + j1)];
+                            phc[(iBase + i1) * size + (jBase + j1)] += pha[(iBase + i1) * size + (kBase + k1)] * phb[(kBase + k1) * size + (jBase + j1)];
                         }
                     }
                 }
@@ -99,26 +99,26 @@ void calcLineBlockMult(double *pha, double *phb, double *phc, int lines, int col
     }
 }
 
-void onMult(int lines, int cols, enum MultType multType) {
+void onMult(int size, enum MultType multType) {
     SYSTEMTIME Time1, Time2;
 
     double *pha, *phb, *phc;
 
-    pha = (double *)malloc((lines * lines) * sizeof(double));
-    phb = (double *)malloc((lines * lines) * sizeof(double));
-    phc = (double *)malloc((lines * lines) * sizeof(double));
+    pha = (double *)malloc((size * size) * sizeof(double));
+    phb = (double *)malloc((size * size) * sizeof(double));
+    phc = (double *)malloc((size * size) * sizeof(double));
 
     int i, j, k;
 
-    for (i = 0; i < lines; i++) {
-        for (j = 0; j < lines; j++) {
-            pha[i * lines + j] = (double) 1.0;
+    for (i = 0; i < size; i++) {
+        for (j = 0; j < size; j++) {
+            pha[i * size + j] = (double) 1.0;
         }
     }
 
-    for (i = 0; i < cols; i++) {
-        for (j = 0; j < cols; j++) {
-            phb[i * cols + j] = (double) (i + 1);
+    for (i = 0; i < size; i++) {
+        for (j = 0; j < size; j++) {
+            phb[i * size + j] = (double) (i + 1);
         }
     }
 
@@ -132,16 +132,16 @@ void onMult(int lines, int cols, enum MultType multType) {
 
     switch (multType) {
         case ORIGINAL:
-            calcOriginalMult(pha, phb, phc, lines, cols);
+            calcOriginalMult(pha, phb, phc, size);
             break;
         case LINE:
-            calcLineMult(pha, phb, phc, lines, cols);
+            calcLineMult(pha, phb, phc, size);
             break;
         case BLOCK_ORIGINAL:
-            calcOriginalBlockMult(pha, phb, phc, lines, cols, blockSize);
+            calcOriginalBlockMult(pha, phb, phc, size, blockSize);
             break;
         case BLOCK_LINE:
-            calcLineBlockMult(pha, phb, phc, lines, cols, blockSize);
+            calcLineBlockMult(pha, phb, phc, size, blockSize);
             break;
         default:
             cerr << "Invalid mult type" << endl;
@@ -157,7 +157,7 @@ void onMult(int lines, int cols, enum MultType multType) {
     // cout << "Result matrix: " << endl;
     for (i = 0; i < 1; i++)
     {
-        for (j = 0; j < min(10, cols); j++)
+        for (j = 0; j < min(10, size); j++)
             cout << phc[j] << " ";
     }
     cout << endl;
@@ -189,7 +189,25 @@ void init_papi()
               << " REVISION: " << PAPI_VERSION_REVISION(retval) << "\n";
 }
 
-void timeTesting() {
+void restartPapi(int eventSet) {
+    long long values[2];
+    int ret = PAPI_stop(eventSet, values);
+    if (ret != PAPI_OK)
+        cout << "ERRO: Stop PAPI" << endl;
+    printf("L1 DCM: %lld \n", values[0]);
+    printf("L2 DCM: %lld \n", values[1]);
+
+    ret = PAPI_reset(eventSet);
+    if (ret != PAPI_OK)
+        std::cout << "FAIL reset" << endl;
+
+    // Start counting
+    ret = PAPI_start(eventSet);
+    if (ret != PAPI_OK)
+        cout << "ERRO: Start PAPI" << endl;
+}
+
+void timeTesting(int eventSet) {
     cout << "COMPARING ORIGINAL AND LINE" << endl << endl;
     // for(int size = 600; size <= 3000; size += 400) {
     //     cout << "Size: " << size << endl;
@@ -206,11 +224,14 @@ void timeTesting() {
     for (int size = 4096; size <= 10240; size += 2048) {
         cout << "Size: " << size << endl;
         cout << "[Line] ";
-        onMult(size, size, LINE);
-        cout << "[Block Original] ";
-        onMult(size, size, BLOCK_ORIGINAL);
+        onMult(size, LINE);
+        restartPapi(eventSet);
+        // cout << "[Block Original] ";
+        // onMult(size, BLOCK_ORIGINAL);
+        // restartPapi(eventSet);
         cout << "[Block Line] ";
-        onMult(size, size, BLOCK_LINE);
+        onMult(size, BLOCK_LINE);
+        restartPapi(eventSet);
         cout << endl;
     }
 }
@@ -219,7 +240,7 @@ int main(int argc, char *argv[])
 {
 
     char c;
-    int lin, col, nt = 1;
+    int size, nt = 1;
     int op;
 
     int EventSet = PAPI_NULL;
@@ -256,8 +277,8 @@ int main(int argc, char *argv[])
         if (op == 0)
             break;
         else if (op != 5) {
-            printf("Dimensions: lins cols ? ");
-            cin >> lin >> col;
+            printf("Size: ");
+            cin >> size;
         }
 
         // Start counting
@@ -267,19 +288,19 @@ int main(int argc, char *argv[])
 
         switch (op) {
         case 1:
-            onMult(lin, col, ORIGINAL);
+            onMult(size, ORIGINAL);
             break;
         case 2:
-            onMult(lin, col, LINE);
+            onMult(size, LINE);
             break;
         case 3:
-            onMult(lin, col, BLOCK_ORIGINAL);
+            onMult(size, BLOCK_ORIGINAL);
             break;
         case 4:
-            onMult(lin, col, BLOCK_LINE);
+            onMult(size, BLOCK_LINE);
             break;
         case 5:
-            timeTesting();
+            timeTesting(EventSet);
             break;
         default:
             cout << "Oops" << endl;
