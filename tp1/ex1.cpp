@@ -99,7 +99,7 @@ void calcLineBlockMult(double *pha, double *phb, double *phc, int lines, int col
     }
 }
 
-void OnMult(int lines, int cols, enum MultType multType, int blockSize) {
+void onMult(int lines, int cols, enum MultType multType) {
     SYSTEMTIME Time1, Time2;
 
     double *pha, *phb, *phc;
@@ -120,6 +120,12 @@ void OnMult(int lines, int cols, enum MultType multType, int blockSize) {
         for (j = 0; j < cols; j++) {
             phb[i * cols + j] = (double) (i + 1);
         }
+    }
+
+    int blockSize = -1;
+    if (multType == BLOCK_ORIGINAL || multType == BLOCK_LINE) {
+        cout << "Block size: ";
+        cin >> blockSize;
     }
 
     Time1 = clock();
@@ -183,6 +189,32 @@ void init_papi()
               << " REVISION: " << PAPI_VERSION_REVISION(retval) << "\n";
 }
 
+void timeTesting() {
+    cout << "COMPARING ORIGINAL AND LINE" << endl << endl;
+    // for(int size = 600; size <= 3000; size += 400) {
+    //     cout << "Size: " << size << endl;
+    //     cout << "[Original] ";
+    //     onMult(size, size, ORIGINAL);
+    //     cout << "[Line] ";
+    //     onMult(size, size, LINE);
+    //     cout << endl;
+    // }
+
+    cout << endl << "===============================" << endl << endl;
+
+    cout << "COMPARING LINE AND BLOCK" << endl;
+    for (int size = 4096; size <= 10240; size += 2048) {
+        cout << "Size: " << size << endl;
+        cout << "[Line] ";
+        onMult(size, size, LINE);
+        cout << "[Block Original] ";
+        onMult(size, size, BLOCK_ORIGINAL);
+        cout << "[Block Line] ";
+        onMult(size, size, BLOCK_LINE);
+        cout << endl;
+    }
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -218,44 +250,36 @@ int main(int argc, char *argv[])
         cout << "2. Line Multiplication" << endl;
         cout << "3. Block Multiplication - Original" << endl;
         cout << "4. Block Multiplication - Line" << endl;
-        cout << "5. Experience Multiplication" << endl;
+        cout << "5. Automatic Time Testing" << endl;
         cout << "Selection?: ";
         cin >> op;
         if (op == 0)
             break;
-        printf("Dimensions: lins cols ? ");
-        cin >> lin >> col;
+        else if (op != 5) {
+            printf("Dimensions: lins cols ? ");
+            cin >> lin >> col;
+        }
 
         // Start counting
         ret = PAPI_start(EventSet);
         if (ret != PAPI_OK)
             cout << "ERRO: Start PAPI" << endl;
 
-        int blockSize;
-
         switch (op) {
         case 1:
-            OnMult(lin, col, ORIGINAL, -1);
+            onMult(lin, col, ORIGINAL);
             break;
         case 2:
-            OnMult(lin, col, LINE, -1);
+            onMult(lin, col, LINE);
             break;
         case 3:
-            cout << "Block size: ";
-            cin >> blockSize;
-            OnMult(lin, col, BLOCK_ORIGINAL, blockSize);
+            onMult(lin, col, BLOCK_ORIGINAL);
             break;
         case 4:
-            cout << "Block size: ";
-            cin >> blockSize;
-            OnMult(lin, col,BLOCK_LINE, blockSize);
+            onMult(lin, col, BLOCK_LINE);
             break;
         case 5:
-            for(int h=600;h<=3000;h+=400){
-                cout << "Size: "<< h<< endl;
-                // OnMult(h, h);
-                // OnMultLine(h,h);
-            }
+            timeTesting();
             break;
         default:
             cout << "Oops" << endl;
