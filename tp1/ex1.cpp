@@ -9,6 +9,9 @@ using namespace std;
 
 #define SYSTEMTIME clock_t
 
+/* Factor for reducing calculations. Useful while in development. Set to 1 for intended operations. */
+#define EASY_FACTOR 8
+
 enum MultType {
     ORIGINAL,
     LINE,
@@ -99,7 +102,10 @@ void calcLineBlockMult(double *pha, double *phb, double *phc, int size, int bloc
     }
 }
 
-void onMult(int size, enum MultType multType) {
+/**
+ * blockSize: If NULL and doing block multiplication, it is asked via user input.
+ */
+void onMult(int size, enum MultType multType, int *blockSize) {
     SYSTEMTIME Time1, Time2;
 
     double *pha, *phb, *phc;
@@ -108,7 +114,7 @@ void onMult(int size, enum MultType multType) {
     phb = (double *)malloc((size * size) * sizeof(double));
     phc = (double *)malloc((size * size) * sizeof(double));
 
-    int i, j, k;
+    int i, j;
 
     for (i = 0; i < size; i++) {
         for (j = 0; j < size; j++) {
@@ -122,10 +128,9 @@ void onMult(int size, enum MultType multType) {
         }
     }
 
-    int blockSize = -1;
-    if (multType == BLOCK_ORIGINAL || multType == BLOCK_LINE) {
+    if (blockSize == NULL && (multType == BLOCK_ORIGINAL || multType == BLOCK_LINE)) {
         cout << "Block size: ";
-        cin >> blockSize;
+        cin >> *blockSize;
     }
 
     Time1 = clock();
@@ -138,10 +143,10 @@ void onMult(int size, enum MultType multType) {
             calcLineMult(pha, phb, phc, size);
             break;
         case BLOCK_ORIGINAL:
-            calcOriginalBlockMult(pha, phb, phc, size, blockSize);
+            calcOriginalBlockMult(pha, phb, phc, size, *blockSize);
             break;
         case BLOCK_LINE:
-            calcLineBlockMult(pha, phb, phc, size, blockSize);
+            calcLineBlockMult(pha, phb, phc, size, *blockSize);
             break;
         default:
             cerr << "Invalid mult type" << endl;
@@ -208,7 +213,7 @@ void restartPapi(int eventSet) {
 }
 
 void timeTesting(int eventSet) {
-    cout << "COMPARING ORIGINAL AND LINE" << endl << endl;
+    // cout << "COMPARING ORIGINAL WITH LINE" << endl << endl;
     // for(int size = 600; size <= 3000; size += 400) {
     //     cout << "Size: " << size << endl;
     //     cout << "[Original] ";
@@ -218,30 +223,32 @@ void timeTesting(int eventSet) {
     //     cout << endl;
     // }
 
-    cout << endl << "===============================" << endl << endl;
+    // cout << endl << "===============================" << endl << endl;
 
-    cout << "COMPARING LINE AND BLOCK" << endl;
-    for (int size = 4096; size <= 10240; size += 2048) {
-        cout << "Size: " << size << endl;
-        cout << "[Line] ";
-        onMult(size, LINE);
+    cout << "COMPARING LINE WITH BLOCK" << endl << endl;
+    for (int size = 4096 / EASY_FACTOR; size <= 10240 / EASY_FACTOR; size += 2048 / EASY_FACTOR) {
+        cout << "Size: " << size << "\n\n";
+        cout << "[Line]\n\n";
+        onMult(size, LINE, NULL);
         restartPapi(eventSet);
+        cout << "\n";
         // cout << "[Block Original] ";
         // onMult(size, BLOCK_ORIGINAL);
         // restartPapi(eventSet);
-        cout << "[Block Line] ";
-        onMult(size, BLOCK_LINE);
-        restartPapi(eventSet);
-        cout << endl;
+
+        cout << "[Block Line]\n\n";
+        for (int blockSize = 128; blockSize <= 512; blockSize *= 2) {
+            cout << "Block size: " << blockSize << "\n";
+            onMult(size, BLOCK_LINE, &blockSize);
+            restartPapi(eventSet);
+            cout << "\n";
+        }
+        cout << "-------------------------------\n\n";
     }
 }
 
-int main(int argc, char *argv[])
-{
-
-    char c;
-    int size, nt = 1;
-    int op;
+int main(int argc, char *argv[]) {
+    int size, op;
 
     int EventSet = PAPI_NULL;
     long long values[2];
@@ -288,33 +295,37 @@ int main(int argc, char *argv[])
 
         switch (op) {
         case 1:
-            onMult(size, ORIGINAL);
+            onMult(size, ORIGINAL, NULL);
             break;
         case 2:
-            onMult(size, LINE);
+            onMult(size, LINE, NULL);
             break;
         case 3:
-            onMult(size, BLOCK_ORIGINAL);
+            onMult(size, BLOCK_ORIGINAL, NULL);
             break;
         case 4:
-            onMult(size, BLOCK_LINE);
+            onMult(size, BLOCK_LINE, NULL);
             break;
         case 5:
             timeTesting(EventSet);
             break;
         default:
-            cout << "Oops" << endl;
+            cerr << "Oops" << endl;
         }
-        ret = PAPI_stop(EventSet, values);
-        if (ret != PAPI_OK)
-            cout << "ERRO: Stop PAPI" << endl;
-        printf("L1 DCM: %lld \n", values[0]);
-        printf("L2 DCM: %lld \n", values[1]);
+        
+        if (op != 5) {
+            ret = PAPI_stop(EventSet, values);
+            if (ret != PAPI_OK) {
+                cout << "ERRO: Stop PAPI" << endl;
+            }
+            printf("L1 DCM: %lld \n", values[0]);
+            printf("L2 DCM: %lld \n", values[1]);
 
-        ret = PAPI_reset(EventSet);
-        if (ret != PAPI_OK)
-            std::cout << "FAIL reset" << endl;
-
+            ret = PAPI_reset(EventSet);
+            if (ret != PAPI_OK) {
+                std::cout << "FAIL reset" << endl;
+            }
+        }
     } while (op != 0);
 
     ret = PAPI_remove_event(EventSet, PAPI_L1_DCM);
