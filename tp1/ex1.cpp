@@ -10,7 +10,7 @@ using namespace std;
 #define SYSTEMTIME clock_t
 
 /* Factor for reducing calculations. Useful while in development. Set to 1 for intended operations. */
-#define EASY_FACTOR 8
+#define EASY_FACTOR 1
 
 enum MultType {
     ORIGINAL,
