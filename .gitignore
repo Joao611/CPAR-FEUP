@@ -34,3 +34,5 @@
 # Misc
 .vscode
 *.zip
+x64
+x86
