@@ -1,19 +1,19 @@
 #include <iostream>
 #include <map>
 #include <time.h>
-#include <omp.h>
 #include <cmath>
+#include <omp.h>
 
 using namespace std;
 
 #define PRINT_ALL_PRIMES false
-#define BLOCKLOW(id,p,n) ((id)*(n/(p)))
-#define BLOCKHIGH(id,p,n) (BLOCKLOW(id+1,p,n)-1)
-#define BLOCKSIZE(id,p,n) (BLOCKHIGH(id,p,n)-BLOCKLOW(id,p,n)+1)
+
+#define PRIME false
+#define NOT_PRIME true
+
 enum AlgorithmType {
 	SEQUENTIAL,
-	OPEN_MP,
-	MPI
+	OPEN_MP
 };
 
 void markMultiples(long long k, bool *numbers, long long n) {
@@ -35,7 +35,7 @@ long long getSmallestUnmarkedOver(long long k, bool *numbers, long long n) {
 void printPrimes(bool *numbers, long long n) {
 	cout << "Primes until " << n << ":\n";
 	for (long long i = 2; i <= n; i++) {
-		if (!numbers[i]) {
+		if (numbers[i] == PRIME) {
 			cout << i << ", ";
 		}
 	}
@@ -43,9 +43,9 @@ void printPrimes(bool *numbers, long long n) {
 }
 
 long long countPrimes(bool *numbers, long long n) {
-	long long  count=0;
+	long long count = 0;
 	for (long long i = 2; i <= n; i++) {
-		if (!numbers[i]) {
+		if (numbers[i] == PRIME) {
 			count++;
 		}
 	}
@@ -53,7 +53,6 @@ long long countPrimes(bool *numbers, long long n) {
 }
 
 void sieveParallel(bool* numbers, long long n){
-
 	long long k = 2;
 	
 	#pragma omp parallel for
@@ -61,24 +60,21 @@ void sieveParallel(bool* numbers, long long n){
 		numbers[i] = false;
 	}
 
-
 	do {
-	long long lowerBound = k * k;
-	#pragma omp parallel for
-	for (long long i = lowerBound; i <= n; i += k) {
-		numbers[i] = true;
-	}
+		long long lowerBound = k * k;
+		#pragma omp parallel for
+		for (long long i = lowerBound; i <= n; i += k) {
+			numbers[i] = true;
+		}
 		k = getSmallestUnmarkedOver(k, numbers, n);
 	} while (k*k <= n);
 
 }
 
-
-
 void sieveSequential(bool *numbers, long long n) {
 	long long k = 2;
 	
-			for (long long i = 0; i <= n; i++) {
+	for (long long i = 0; i <= n; i++) {
 		numbers[i] = false;
 	}
 	do {
@@ -87,37 +83,32 @@ void sieveSequential(bool *numbers, long long n) {
 	} while (k*k <= n);
 }
 
-
 void sieve(long long n, AlgorithmType type) {
 	double start, finish;
 
 	bool *numbers = new bool[n + 1]; // includes 0
 
-		start = omp_get_wtime();
-
+	start = omp_get_wtime();
 
 	switch (type) {
 	case SEQUENTIAL:
 		sieveSequential(numbers, n);
 		break;
 	case OPEN_MP:
-	sieveParallel(numbers,n);
-		break;
-	case MPI:
-	
+		sieveParallel(numbers, n);
 		break;
 	default:
 		throw runtime_error("sieve(): Invalid option");
 	}
 
-	finish =omp_get_wtime();
+	finish = omp_get_wtime();
 
 	char st[100];
 	sprintf(st, "Time: %3.3f seconds\n",
 		finish - start);
 	cout << st;
-	long long number_primes= countPrimes(numbers,n);
-	cout << "Number of Primes: "<< number_primes <<endl;
+	long long numberPrimes = countPrimes(numbers, n);
+	cout << "Number of Primes: "<< numberPrimes <<endl;
 
 #if PRINT_ALL_PRIMES
 	printPrimes(numbers, n);
@@ -130,7 +121,6 @@ void printOptions() {
   cout << "Options:\n";
   cout << "1. Sequential\n";
   cout << "2. Parallel - Shared (OpenMP)\n";
-  cout << "3. Parallel - Distributed (MPI)\n";
 }
 
 void executeOption(int option) {
@@ -147,9 +137,6 @@ void executeOption(int option) {
 		break;
 	case 2:
 		sieve(n, OPEN_MP);
-		break;
-	case 3:
-		sieve(n, MPI);
 		break;
 	default:
 		throw runtime_error("Invalid option");
