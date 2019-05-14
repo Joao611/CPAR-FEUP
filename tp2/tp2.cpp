@@ -30,6 +30,7 @@ long long getSmallestUnmarkedOver(long long k, bool *numbers, long long n) {
 		}
 	}
 	cout << "getSmallestUnmarkedOver(): This shouldn't happen" << endl;
+	return LLONG_MIN;
 }
 
 void printPrimes(bool *numbers, long long n) {
