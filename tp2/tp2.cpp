@@ -2,6 +2,7 @@
 #include <map>
 #include <time.h>
 #include <cmath>
+#include <climits>
 #include <omp.h>
 
 using namespace std;
