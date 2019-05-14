@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cmath>
+#include <climits>
 #include <mpi.h>
 
 #define PRIME false
