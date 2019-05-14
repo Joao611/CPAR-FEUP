@@ -54,7 +54,7 @@ long long countPrimes(bool *numbers, long long n) {
 	return count;
 }
 
-void sieveParallel(bool* numbers, long long n){
+void sieveParallel(bool* numbers, long long n) {
 	long long k = 2;
 	
 	#pragma omp parallel for
@@ -70,7 +70,6 @@ void sieveParallel(bool* numbers, long long n){
 		}
 		k = getSmallestUnmarkedOver(k, numbers, n);
 	} while (k*k <= n);
-
 }
 
 void sieveSequential(bool *numbers, long long n) {

@@ -45,7 +45,7 @@ void sieveDistributed(int power) {
 		openMPITime = -MPI_Wtime();
 	}
 
-	for (unsigned long long k = 2; k*k <= n;) {
+	for (unsigned long long k = 2; k*k <= n; ) {
 		// calculate the start block value to each process
 		if (pow(k, 2) < lowValue) {
 			lowValue% k == 0 ?
