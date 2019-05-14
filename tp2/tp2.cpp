@@ -128,9 +128,10 @@ void executeOption(int option) {
 		throw runtime_error("Exiting");
 	}
 
-	long long n;
-	cout << "Size: ";
-	cin >> n;
+	int power;
+	cout << "Power (2^x): ";
+	cin >> power;
+	long long n = pow(2, power);
 	switch (option) {
 	case 1:
 		sieve(n, SEQUENTIAL);
