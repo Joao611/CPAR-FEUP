@@ -56,10 +56,12 @@ long long countPrimes(bool *numbers, long long n) {
 
 void sieveParallel(bool* numbers, long long n) {
 	long long k = 2;
+	// omp_set_num_threads(1);
 	
 	#pragma omp parallel for
 	for (long long i = 0; i <= n; i++) {
 		numbers[i] = false;
+		// printf("Threads: %d\n", omp_get_num_threads());
 	}
 
 	do {
