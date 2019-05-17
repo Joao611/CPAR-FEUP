@@ -2,6 +2,8 @@
 #include <cmath>
 #include <climits>
 #include <mpi.h>
+// Uncomment the line below for standard MPI.
+#include <omp.h>
 
 #define PRIME false
 #define NOT_PRIME true
@@ -56,8 +58,11 @@ void sieveDistributed(int power) {
 		}
 
 		// mark multiples
-		for (unsigned long long i = startBlockValue; i <= highValue; i += k)
+		// Uncomment the line below for standard MPI.
+		#pragma omp parallel for
+		for (unsigned long long i = startBlockValue; i <= highValue; i += k) {
 			list[i - lowValue] = NOT_PRIME;
+		}
 
 		// get the next prime to broadcast it to the other processes
 		if (processRank == 0) {
@@ -74,6 +79,8 @@ void sieveDistributed(int power) {
 		cout << "Time: " << openMPITime << "s\n";
 	}
 
+	// Uncomment the line below for standard MPI.
+	#pragma omp parallel for reduction(+:counter)
 	for (unsigned long long i = 0; i < blockSize; i++) {
 		if (list[i] == PRIME) {
 			counter++;
